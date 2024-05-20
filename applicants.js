@@ -1,17 +1,17 @@
 const express = require('express');
-const Employee = require('../db/schema');
-const validateEmployee = require('../middlewares/validateEmployee');
+const Candidate = require('../db/schema');
+const validateCandidate = require('../middlewares/validateCandidate');
 
 const router = express.Router();
 
 router.get('/', async (req, res) => {
-  const employees = await Employee.find({});
+  const candidates = await Candidate.find({});
   res.json(employees);
 });
 
 const { check, validationResult } = require('express-validator');
 
-// Create a new employee
+// Create a new Candidate
 router.post('/', [
   check('name').notEmpty().withMessage('Name is required'),
   check('email').isEmail().withMessage('Invalid email address'),
@@ -21,14 +21,14 @@ router.post('/', [
     return res.status(400).json({ errors: errors.array() });
   }
 
-  const employee = new Employee(req.body);
-  await employee.save();
-  res.status(201).json(employee);
+  const Candidate = new Candidate(req.body);
+  await candidate.save();
+  res.status(201).json(candidate);
 });
 
-// Update an existing employee
+// Update an existing Candidate
 router.put('/:id', [
-    check('id').isMongoId().withMessage('Invalid employee ID'),
+    check('id').isMongoId().withMessage('Invalid Candidate ID'),
     check('name').notEmpty().withMessage('Name is required'),
   ], async (req, res) => {
     const errors = validationResult(req);
@@ -37,19 +37,19 @@ router.put('/:id', [
     }
   
     const { id, name, email } = req.body;
-    const updatedEmployee = await Employee.findByIdAndUpdate(req.params.id, { name, email }, { new: true });
-    if (!updatedEmployee) {
-      return res.status(404).json({ error: 'Employee not found' });
+    const updateCandidate = await Candidate.findByIdAndUpdate(req.params.id, { name, email }, { new: true });
+    if (!updatedCandidate) {
+      return res.status(404).json({ error: 'Candidate not found' });
     }
-    res.json(updatedEmployee);
+    res.json(updatedCandidate);
   });
 
-  // Delete an existing employee
+  // Delete an existing Candidate
 router.delete('/:id', async (req, res) => {
-    const employee = await Employee.findByIdAndDelete(req.params.id);
-    if (!employee) {
-      return res.status(404).json({ error: 'Employee not found' });
+    const candidate = await Candidate.findByIdAndDelete(req.params.id);
+    if (!candidate) {
+      return res.status(404).json({ error: 'Candidate not found' });
     }
-    res.json({ message: 'Employee deleted successfully' });
+    res.json({ message: 'Candidate deleted successfully' });
   });
 module.exports = router;
